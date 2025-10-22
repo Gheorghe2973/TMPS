@@ -2,8 +2,6 @@
 
 ## Author: Gurschi Gheorghe
 
----
-
 ## Objectives:
 
 * Get familiar with the Creational Design Patterns;
@@ -15,6 +13,93 @@
 * **Singleton Pattern** - Database Connection
 * **Factory Method Pattern** - Computer Factory
 * **Builder Pattern** - Custom Computer Builder
+
+## SOLID Principles Implementation
+
+Pe lângă Design Patterns, acest proiect respectă și implementează 3 principii SOLID fundamentale:
+
+### 1. Single Responsibility Principle (SRP)
+
+Fiecare clasă din proiect are o singură responsabilitate bine definită:
+
+* `DatabaseConnection` - gestionează exclusiv conexiunea la baza de date
+* `Computer` - definește interfața comună pentru toate tipurile de computere
+* `GamingComputer`, `OfficeComputer`, `ServerComputer` - fiecare gestionează propriile specificații
+* `ComputerFactory` - responsabil doar pentru crearea instanțelor de calculatoare
+* `CustomComputer` - stochează datele unui computer personalizat
+* `ComputerBuilder` - construiește pas cu pas computere personalizate
+
+**Exemplu din cod:**
+
+```python
+class DatabaseConnection:  # O singură responsabilitate: gestionare conexiune
+    def query(self, sql: str):
+        return f"Executing: {sql}"
+
+class ComputerFactory:  # O singură responsabilitate: creare computere
+    @staticmethod
+    def create_computer(computer_type: str) -> Computer:
+        # Logică de creare...
+```
+
+### 2. Open/Closed Principle (OCP)
+
+Sistemul este deschis pentru extindere, dar închis pentru modificare. Putem adăuga noi tipuri de calculatoare fără a modifica clasele existente:
+
+**Exemplu de extindere:**
+
+```python
+# Clasa de bază rămâne neschimbată (closed for modification)
+class Computer(ABC):
+    @abstractmethod
+    def get_specs(self) -> str:
+        pass
+
+# Putem extinde cu noi tipuri (open for extension)
+class GamingComputer(Computer):  # Tip existent
+    pass
+
+class WorkstationComputer(Computer):  # Tip nou - fără modificări în cod existent!
+    def __init__(self):
+        super().__init__()
+        self.cpu = "Intel Xeon"
+        self.ram = "64GB ECC"
+        self.storage = "2TB NVMe"
+  
+    def get_specs(self) -> str:
+        return f"Workstation: {self.cpu}, {self.ram}, {self.storage}"
+```
+
+Acest principiu este evidențiat în special prin Factory Method Pattern, care permite adăugarea de noi produse fără modificarea structurii existente.
+
+### 3. Liskov Substitution Principle (LSP)
+
+Obiectele claselor derivate pot înlocui obiectele clasei de bază fără a afecta corectitudinea programului. Toate subclasele `Computer` pot fi folosite interschimbabil:
+
+**Exemplu din cod:**
+
+```python
+# Factory returnează tipul de bază Computer
+def create_computer(computer_type: str) -> Computer:
+    if computer_type == "gaming":
+        return GamingComputer()  # Subclasă care înlocuiește baza
+    elif computer_type == "office":
+        return OfficeComputer()  # Subclasă care înlocuiește baza
+    elif computer_type == "server":
+        return ServerComputer()  # Subclasă care înlocuiește baza
+
+# Toate pot fi tratate uniform ca Computer
+gaming_pc: Computer = ComputerFactory.create_computer("gaming")
+office_pc: Computer = ComputerFactory.create_computer("office")
+server: Computer = ComputerFactory.create_computer("server")
+
+# Toate implementează get_specs() și funcționează identic
+print(gaming_pc.get_specs())  # ✅ Funcționează
+print(office_pc.get_specs())  # ✅ Funcționează
+print(server.get_specs())     # ✅ Funcționează
+```
+
+Fiecare subclasă respectă contractul definit de clasa abstractă `Computer`, asigurând substituibilitatea perfectă.
 
 ## Implementation
 
@@ -38,7 +123,7 @@ class DatabaseConnection:
         return cls._instance
 ```
 
-Când creăm două instanțe ale clasei DatabaseConnection, ambele referă același obiect în memorie, demonstrând astfel pattern-ul Singleton.
+Când creăm două instanțe ale clasei DatabaseConnection, ambele referă același obiect în memorie, demonstrând astfel pattern-ul Singleton. **Acest pattern respectă SRP** - clasa are responsabilitatea unică de a gestiona conexiunea la baza de date.
 
 ### 2. Factory Method Pattern - Computer Factory
 
@@ -58,7 +143,7 @@ class ComputerFactory:
             raise ValueError(f"Unknown computer type: {computer_type}")
 ```
 
-Factory-ul centralizează logica de creare a obiectelor și face codul mai ușor de extins cu noi tipuri de calculatoare.
+Factory-ul centralizează logica de creare a obiectelor și face codul mai ușor de extins cu noi tipuri de calculatoare. **Acest pattern demonstrează perfect OCP** - putem adăuga noi tipuri de computere fără a modifica interfața `Computer` sau alte clase existente.
 
 ### 3. Builder Pattern - Custom Computer Builder
 
@@ -81,7 +166,7 @@ class ComputerBuilder:
         return self.computer
 ```
 
-Builder-ul oferă o interfață fluent (method chaining) pentru construirea obiectelor complexe într-un mod intuitiv și ușor de citit.
+Builder-ul oferă o interfață fluent (method chaining) pentru construirea obiectelor complexe într-un mod intuitiv și ușor de citit. **Acest pattern respectă SRP** - responsabilitatea unică este construirea pas cu pas a obiectelor complexe.
 
 ## Conclusions / Results
 
@@ -112,15 +197,25 @@ Custom Computer:
 
 ### Conclusions:
 
-În acest laborator am implementat cu succes trei Creational Design Patterns fundamentale în contextul unui Computer Shop:
+În acest laborator am implementat cu succes trei Creational Design Patterns fundamentale în contextul unui Computer Shop, respectând totodată trei principii SOLID esențiale.
 
-**Singleton Pattern** s-a dovedit esențial pentru gestionarea resurselor partajate, în cazul nostru conexiunea la baza de date. Acest pattern garantează că o singură instanță există în sistem, prevenind crearea multiplă de conexiuni și asigurând consistența datelor.
+**Singleton Pattern** s-a dovedit esențial pentru gestionarea resurselor partajate, în cazul nostru conexiunea la baza de date. Acest pattern garantează că o singură instanță există în sistem, prevenind crearea multiplă de conexiuni și asigurând consistența datelor. Implementarea respectă **Single Responsibility Principle**, având o responsabilitate unică și bine definită.
 
-**Factory Method Pattern** a simplificat semnificativ procesul de creare a obiectelor. În loc să instanțiem direct clasele specifice (GamingComputer, OfficeComputer, ServerComputer), factory-ul oferă o interfață uniformă care ascunde complexitatea și face codul mai ușor de menținut și extins.
+**Factory Method Pattern** a simplificat semnificativ procesul de creare a obiectelor. În loc să instanțiem direct clasele specifice (GamingComputer, OfficeComputer, ServerComputer), factory-ul oferă o interfață uniformă care ascunde complexitatea și face codul mai ușor de menținut și extins. Acest pattern demonstrează excelent **Open/Closed Principle** - sistemul este deschis pentru extindere (putem adăuga noi tipuri de computere) dar închis pentru modificare (nu trebuie să modificăm clasele existente).
 
-**Builder Pattern** a demonstrat utilitatea sa în construirea obiectelor complexe cu multe proprietăți opționale. Sintaxa fluent (method chaining) face codul mult mai lizibil comparativ cu constructori cu mulți parametri, iar procesul de construcție devine explicit și ușor de urmărit.
+**Builder Pattern** a demonstrat utilitatea sa în construirea obiectelor complexe cu multe proprietăți opționale. Sintaxa fluent (method chaining) face codul mult mai lizibil comparativ cu constructori cu mulți parametri, iar procesul de construcție devine explicit și ușor de urmărit. Pattern-ul respectă **Single Responsibility Principle** prin separarea clară a responsabilităților.
 
-Aceste pattern-uri creaționale îmbunătățesc calitatea codului prin: încapsularea logicii de creare, reducerea coupling-ului între clase, creșterea flexibilității și mentenabilității, și oferirea unei structuri clare și consistente pentru instanțierea obiectelor. Implementarea lor în Python demonstrează cum principiile OOP pot fi aplicate elegant pentru a rezolva probleme comune de design software.
+**Liskov Substitution Principle** este implementat consistent în ierarhia de clase `Computer`, unde toate subclasele (GamingComputer, OfficeComputer, ServerComputer) pot înlocui clasa de bază fără a afecta corectitudinea programului. Acest lucru este evidențiat în Factory Method, unde toate obiectele create pot fi tratate uniform prin interfața comună.
+
+Aceste pattern-uri creaționale, împreună cu principiile SOLID, îmbunătățesc calitatea codului prin:
+
+* **Încapsularea** logicii de creare
+* **Reducerea coupling-ului** între clase
+* **Creșterea flexibilității** și mentenabilității
+* **Oferirea unei structuri** clare și consistente pentru instanțierea obiectelor
+* **Respectarea principiilor** de design orientat pe obiect
+
+Implementarea lor în Python demonstrează cum principiile OOP și SOLID pot fi aplicate elegant pentru a rezolva probleme comune de design software, creând cod robust, extensibil și ușor de întreținut.
 
 ---
 
