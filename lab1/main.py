@@ -1,13 +1,8 @@
-# Creational Design Patterns - Computer Shop Domain
-# Implements: Singleton, Factory Method, and Builder patterns
-
 from abc import ABC, abstractmethod
 from typing import List
 
 
-# SINGLETON PATTERN - Database Connection
 class DatabaseConnection:
-    # Singleton pattern ensures only one database connection exists
     _instance = None
     
     def __new__(cls):
@@ -21,9 +16,7 @@ class DatabaseConnection:
         return f"Executing: {sql}"
 
 
-# FACTORY METHOD PATTERN - Computer Factory
 class Computer(ABC):
-    # Abstract base class for computers
     def __init__(self):
         self.cpu = ""
         self.ram = ""
@@ -35,7 +28,6 @@ class Computer(ABC):
 
 
 class GamingComputer(Computer):
-    # Gaming computer implementation
     def __init__(self):
         super().__init__()
         self.cpu = "Intel i9"
@@ -48,7 +40,6 @@ class GamingComputer(Computer):
 
 
 class OfficeComputer(Computer):
-    # Office computer implementation
     def __init__(self):
         super().__init__()
         self.cpu = "Intel i5"
@@ -60,7 +51,6 @@ class OfficeComputer(Computer):
 
 
 class ServerComputer(Computer):
-    # Server computer implementation
     def __init__(self):
         super().__init__()
         self.cpu = "AMD EPYC"
@@ -72,7 +62,6 @@ class ServerComputer(Computer):
 
 
 class ComputerFactory:
-    # Factory Method pattern for creating computers
     @staticmethod
     def create_computer(computer_type: str) -> Computer:
         if computer_type == "gaming":
@@ -85,9 +74,7 @@ class ComputerFactory:
             raise ValueError(f"Unknown computer type: {computer_type}")
 
 
-# BUILDER PATTERN - Custom Computer Builder
 class CustomComputer:
-    # Product class for Builder pattern
     def __init__(self):
         self.cpu = ""
         self.ram = ""
@@ -109,7 +96,6 @@ class CustomComputer:
 
 
 class ComputerBuilder:
-    # Builder pattern for creating custom computers
     def __init__(self):
         self.computer = CustomComputer()
     
@@ -141,18 +127,15 @@ class ComputerBuilder:
         return self.computer
 
 
-# DEMONSTRATION
 def main():
     print("=== CREATIONAL DESIGN PATTERNS DEMO ===\n")
     
-    # 1. SINGLETON PATTERN
     print("1. SINGLETON PATTERN - Database Connection")
     db1 = DatabaseConnection()
     db2 = DatabaseConnection()
     print(f"Same instance? {db1 is db2}")
     print(f"{db1.query('SELECT * FROM computers')}\n")
     
-    # 2. FACTORY METHOD PATTERN
     print("2. FACTORY METHOD PATTERN - Computer Factory")
     gaming_pc = ComputerFactory.create_computer("gaming")
     office_pc = ComputerFactory.create_computer("office")
@@ -162,7 +145,6 @@ def main():
     print(office_pc.get_specs())
     print(f"{server.get_specs()}\n")
     
-    # 3. BUILDER PATTERN
     print("3. BUILDER PATTERN - Custom Computer Builder")
     custom_pc = (ComputerBuilder()
                  .set_cpu("AMD Ryzen 9")

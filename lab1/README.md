@@ -1,8 +1,8 @@
 # Creational Design Patterns
 
-## Author: [Numele Tău]
+## Author: Gurschi Gheorghe
 
-----
+---
 
 ## Objectives:
 
@@ -19,6 +19,7 @@
 ## Implementation
 
 ### Domain Description
+
 Am ales domeniul unui **Computer Shop** care gestionează diferite tipuri de calculatoare și conexiuni la baze de date. Sistemul permite crearea de calculatoare predefinite (gaming, office, server) și construirea de calculatoare custom personalizate.
 
 ### 1. Singleton Pattern - Database Connection
@@ -28,7 +29,7 @@ Singleton Pattern asigură că există o singură instanță a conexiunii la baz
 ```python
 class DatabaseConnection:
     _instance = None
-    
+  
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
@@ -67,15 +68,15 @@ Builder Pattern permite construirea pas cu pas a unui obiect complex. Acest patt
 class ComputerBuilder:
     def __init__(self):
         self.computer = CustomComputer()
-    
+  
     def set_cpu(self, cpu: str):
         self.computer.cpu = cpu
         return self
-    
+  
     def set_ram(self, ram: str):
         self.computer.ram = ram
         return self
-    
+  
     def build(self) -> CustomComputer:
         return self.computer
 ```
@@ -85,6 +86,7 @@ Builder-ul oferă o interfață fluent (method chaining) pentru construirea obie
 ## Conclusions / Results
 
 ### Output Example:
+
 ```
 === CREATIONAL DESIGN PATTERNS DEMO ===
 
@@ -123,10 +125,12 @@ Aceste pattern-uri creaționale îmbunătățesc calitatea codului prin: încaps
 ---
 
 ### How to Run:
+
 ```bash
 python main.py
 ```
 
 ### Requirements:
+
 * Python 3.7+
 * No external dependencies required
