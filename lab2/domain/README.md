@@ -1,7 +1,6 @@
 # Computer Assembly - Creational Design Patterns Report
 
-**Author:** Drumea Vasile  
-**Course:** Software Design Patterns  
+**Course:** Software Design Patterns
 **Topic:** Creational Design Patterns
 
 ---
@@ -29,6 +28,7 @@
 **Location:** `domain/factory/computer_factory.py`
 
 **Code:**
+
 ```python
 from abc import ABC, abstractmethod
 from domain.models.computer import ComputerBuilder
@@ -68,10 +68,11 @@ class ServerFactory(ComputerFactory):
                 .build())
 ```
 
-**Explanation:**  
+**Explanation:**
 The `ComputerFactory` abstract class defines the interface with the `create_computer()` method. Three concrete factories (`GamingPCFactory`, `OfficePCFactory`, `ServerFactory`) implement this method to create specific computer types. Each factory encapsulates the creation logic for a particular computer configuration. This allows the client code to create computers without knowing the specific configuration details, and new computer types can be added by creating new factory classes without modifying existing code.
 
 **Usage:**
+
 ```python
 gaming_factory = GamingPCFactory()
 gaming_pc = gaming_factory.create_computer()
@@ -88,6 +89,7 @@ print(f"Gaming PC: {gaming_pc}")
 **Location:** `domain/models/computer.py`
 
 **Code:**
+
 ```python
 class Computer:
     def __init__(self):
@@ -147,10 +149,11 @@ class ComputerBuilder:
         return self.computer
 ```
 
-**Explanation:**  
+**Explanation:**
 The `ComputerBuilder` class provides a fluent interface for constructing `Computer` objects step-by-step. Each setter method returns `self`, enabling method chaining. The `Computer` class represents the complex object being built with multiple optional components (CPU, RAM, GPU, storage, case, accessories). This pattern is particularly useful when an object has many optional parameters, avoiding constructor telescoping and making the code more readable.
 
 **Usage:**
+
 ```python
 custom_computer = (ComputerBuilder()
                    .set_cpu("AMD Ryzen 9")
@@ -174,6 +177,7 @@ custom_computer = (ComputerBuilder()
 **Location:** `domain/models/computer.py`
 
 **Code:**
+
 ```python
 class ConfigurationManager:
     _instance = None
@@ -194,10 +198,11 @@ class ConfigurationManager:
         return list(self.configurations.keys())
 ```
 
-**Explanation:**  
+**Explanation:**
 The `ConfigurationManager` uses Python's `__new__` method to control instance creation. The `_instance` class variable stores the single instance. When `__new__` is called, it checks if an instance already exists; if not, it creates one and initializes the configurations dictionary. All subsequent calls return the same instance. This ensures that all parts of the application share the same configuration data, preventing inconsistencies and reducing memory usage.
 
 **Usage:**
+
 ```python
 config1 = ConfigurationManager()
 config2 = ConfigurationManager()
@@ -217,10 +222,11 @@ print(config2.list_configurations())  # Output: ['Gaming Setup']
 **Location:** `domain/models/computer.py`
 
 **Code:**
+
 ```python
 class Computer:
     # ... (previous code)
-    
+  
     def clone(self):
         new_computer = Computer()
         new_computer.cpu = self.cpu
@@ -232,10 +238,11 @@ class Computer:
         return new_computer
 ```
 
-**Explanation:**  
+**Explanation:**
 The `clone()` method creates a new `Computer` instance and copies all attributes from the current instance to the new one. The accessories list is copied using `.copy()` to create a shallow copy, preventing shared reference issues. This pattern is useful when creating objects is expensive or complex, or when you want to create variations of a base configuration. Instead of rebuilding an entire computer from scratch, you clone a template and modify only what's needed.
 
 **Usage:**
+
 ```python
 base_pc = (ComputerBuilder()
            .set_cpu("Intel i7")
@@ -264,6 +271,7 @@ cloned_pc2.gpu = "RTX 4060"
 **Location:** `domain/factory/component_factory.py`
 
 **Code:**
+
 ```python
 from abc import ABC, abstractmethod
 
@@ -315,10 +323,11 @@ class BudgetFactory(ComponentFactory):
         return "256GB SSD"
 ```
 
-**Explanation:**  
+**Explanation:**
 The `ComponentFactory` abstract class defines methods for creating a family of related components (CPU, RAM, Storage). Each concrete factory (`AMDFactory`, `IntelAMDFactory`, `BudgetFactory`) implements these methods to create components that work well together. This ensures compatibility between components - an AMD factory creates AMD-compatible parts, a Budget factory creates budget-tier parts. The client can switch between entire component families by changing the factory instance, without modifying the construction code.
 
 **Usage:**
+
 ```python
 amd_factory = AMDFactory()
 
@@ -335,6 +344,7 @@ print(f"AMD Computer: {amd_computer}")
 ---
 
 ## Project Structure
+
 ```
 lab2/
 ├── domain/
@@ -356,6 +366,7 @@ lab2/
 ---
 
 ## Output Results
+
 ```
 === Factory Method Pattern ===
 Gaming PC: Intel i9, 32GB DDR5, 2TB NVMe SSD, RTX 4090
@@ -391,13 +402,9 @@ AMD Computer: AMD Ryzen 9, 32GB DDR5, 2TB NVMe SSD
 This project successfully demonstrates 5 creational design patterns applied to a computer assembly domain:
 
 1. **Factory Method** - Encapsulates object creation logic for different computer types (Gaming, Office, Server), allowing easy extension without modifying existing code.
-
 2. **Builder** - Provides a fluent interface for constructing complex Computer objects with many optional components, improving code readability and maintainability.
-
 3. **Singleton** - Ensures single instance of ConfigurationManager for consistent state management across the application.
-
 4. **Prototype** - Enables efficient cloning of base computer configurations, reducing initialization overhead when creating similar objects.
-
 5. **Abstract Factory** - Creates families of compatible components (AMD, Intel, Budget), ensuring component compatibility and allowing easy switching between product families.
 
 Each pattern addresses specific object creation challenges while maintaining clean architecture and following SOLID principles, particularly the Open/Closed Principle (open for extension, closed for modification).

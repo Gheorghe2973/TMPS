@@ -1,9 +1,9 @@
 # Computer Assembly - Structural Design Patterns Report
 
-**Course:** Software Design Patterns  
+**Course:** Software Design Patterns
 **Topic:** Structural Design Patterns
 
----
+a---
 
 ## Objectives
 
@@ -29,6 +29,7 @@
 **Location:** `domain/adapters/legacy_adapter.py`
 
 **Code:**
+
 ```python
 from abc import ABC, abstractmethod
 
@@ -37,7 +38,7 @@ class LegacyComponent:
     def __init__(self, component_type: str, specifications: str):
         self.component_type = component_type
         self.specifications = specifications
-    
+  
     def get_component_info(self) -> str:
         return f"{self.component_type}: {self.specifications}"
 
@@ -46,11 +47,11 @@ class ModernComponentInterface(ABC):
     @abstractmethod
     def get_name(self) -> str:
         pass
-    
+  
     @abstractmethod
     def get_specs(self) -> str:
         pass
-    
+  
     @abstractmethod
     def is_compatible(self) -> bool:
         pass
@@ -60,28 +61,29 @@ class LegacyComponentAdapter(ModernComponentInterface):
     def __init__(self, legacy_component: LegacyComponent):
         self._legacy_component = legacy_component
         self._compatibility_check()
-    
+  
     def get_name(self) -> str:
         return self._legacy_component.component_type
-    
+  
     def get_specs(self) -> str:
         return self._legacy_component.specifications
-    
+  
     def is_compatible(self) -> bool:
         return self._compatible
-    
+  
     def _compatibility_check(self):
         self._compatible = bool(self._legacy_component.specifications)
-    
+  
     def __str__(self):
         status = "✓ Compatible" if self._compatible else "✗ Incompatible"
         return f"{self.get_name()}: {self.get_specs()} [{status}]"
 ```
 
-**Explanation:**  
+**Explanation:**
 The Adapter Pattern bridges the gap between legacy and modern component systems. Legacy components use the `get_component_info()` method, while the modern system expects `get_name()`, `get_specs()`, and `is_compatible()` methods. The `LegacyComponentAdapter` wraps legacy components and translates their interface to match modern expectations. This allows seamless integration of older components without modifying either the legacy code or the modern system, following the Open/Closed Principle.
 
 **Usage:**
+
 ```python
 legacy_cpu = LegacyComponent("CPU", "Intel Core i7-9700K 8-core 3.6GHz")
 adapted_cpu = LegacyComponentAdapter(legacy_cpu)
@@ -103,6 +105,7 @@ print(adapted_cpu.is_compatible())  # Output: True
 **Location:** `domain/decorators/computer_decorator.py`
 
 **Code:**
+
 ```python
 from abc import ABC, abstractmethod
 from domain.models.computer import Computer
@@ -112,7 +115,7 @@ class ComputerComponent(ABC):
     @abstractmethod
     def get_description(self) -> str:
         pass
-    
+  
     @abstractmethod
     def get_cost(self) -> float:
         pass
@@ -122,10 +125,10 @@ class BaseComputer(ComputerComponent):
     def __init__(self, computer: Computer):
         self._computer = computer
         self._base_cost = 1000.0
-    
+  
     def get_description(self) -> str:
         return str(self._computer)
-    
+  
     def get_cost(self) -> float:
         return self._base_cost
 
@@ -133,11 +136,11 @@ class BaseComputer(ComputerComponent):
 class ComputerDecorator(ComputerComponent):
     def __init__(self, computer_component: ComputerComponent):
         self._component = computer_component
-    
+  
     @abstractmethod
     def get_description(self) -> str:
         pass
-    
+  
     @abstractmethod
     def get_cost(self) -> float:
         pass
@@ -148,10 +151,10 @@ class WarrantyDecorator(ComputerDecorator):
         super().__init__(computer_component)
         self._years = years
         self._warranty_cost = years * 50.0
-    
+  
     def get_description(self) -> str:
         return f"{self._component.get_description()} + {self._years}Y Warranty"
-    
+  
     def get_cost(self) -> float:
         return self._component.get_cost() + self._warranty_cost
 
@@ -160,10 +163,10 @@ class OverclockingDecorator(ComputerDecorator):
     def __init__(self, computer_component: ComputerComponent):
         super().__init__(computer_component)
         self._overclock_cost = 200.0
-    
+  
     def get_description(self) -> str:
         return f"{self._component.get_description()} + Professional Overclocking"
-    
+  
     def get_cost(self) -> float:
         return self._component.get_cost() + self._overclock_cost
 
@@ -172,10 +175,10 @@ class RGBLightingDecorator(ComputerDecorator):
     def __init__(self, computer_component: ComputerComponent):
         super().__init__(computer_component)
         self._rgb_cost = 150.0
-    
+  
     def get_description(self) -> str:
         return f"{self._component.get_description()} + RGB Lighting System"
-    
+  
     def get_cost(self) -> float:
         return self._component.get_cost() + self._rgb_cost
 
@@ -185,18 +188,19 @@ class CustomPaintDecorator(ComputerDecorator):
         super().__init__(computer_component)
         self._color = color
         self._paint_cost = 300.0
-    
+  
     def get_description(self) -> str:
         return f"{self._component.get_description()} + Custom {self._color} Paint"
-    
+  
     def get_cost(self) -> float:
         return self._component.get_cost() + self._paint_cost
 ```
 
-**Explanation:**  
+**Explanation:**
 The Decorator Pattern allows adding features to computers dynamically without modifying the original `Computer` class. Each decorator (Warranty, Overclocking, RGB, CustomPaint) wraps a `ComputerComponent` and adds its own functionality while delegating to the wrapped component. Decorators can be stacked in any combination, providing extreme flexibility. This approach avoids creating separate subclasses for every possible combination of features (which would result in a class explosion) and follows the Single Responsibility Principle by keeping each feature in its own class.
 
 **Usage:**
+
 ```python
 gaming_pc = (ComputerBuilder()
             .set_cpu("Intel i9")
@@ -222,6 +226,7 @@ print(final.get_cost())  # Output: $1800.00
 **Location:** `domain/facades/assembly_facade.py` and `domain/facades/subsystems.py`
 
 **Code:**
+
 ```python
 # subsystems.py
 from domain.models.computer import Computer
@@ -233,7 +238,7 @@ class ComponentValidator:
         if any(cpu_name in cpu for cpu_name in ddr5_cpus):
             return "DDR5" in ram
         return "DDR4" in ram
-    
+  
     def validate_gpu_power(self, gpu: str, ram: str) -> bool:
         high_end_gpus = ["RTX 4090", "RTX 4080", "RTX 4070"]
         if any(gpu_name in gpu for gpu_name in high_end_gpus):
@@ -252,7 +257,7 @@ class PriceCalculator:
             "128GB ECC": 800, "2TB NVMe SSD": 200, "1TB SSD": 100,
             "512GB SSD": 60, "4TB RAID": 600
         }
-    
+  
     def calculate_total_price(self, computer: Computer) -> float:
         total = 0.0
         if computer.cpu:
@@ -272,11 +277,11 @@ class PriceCalculator:
 class AssemblyScheduler:
     def __init__(self):
         self._queue = []
-    
+  
     def schedule_assembly(self, order_id: str, computer: Computer) -> str:
         position = len(self._queue) + 1
         self._queue.append(order_id)
-        
+    
         complexity = sum([
             1 if computer.cpu else 0,
             1 if computer.ram else 0,
@@ -285,7 +290,7 @@ class AssemblyScheduler:
             1 if computer.case else 0,
             len(computer.accessories)
         ])
-        
+    
         hours = complexity * 0.5 + 1
         return f"Order #{order_id} scheduled. Position: {position}. Estimated: {hours}h"
 
@@ -302,27 +307,27 @@ class ComputerAssemblyFacade:
         self._price_calculator = PriceCalculator()
         self._scheduler = AssemblyScheduler()
         self._order_counter = 1000
-    
+  
     def order_computer(self, computer: Computer) -> Dict[str, any]:
         order_id = str(self._order_counter)
         self._order_counter += 1
-        
+    
         is_valid = True
         validation_messages = []
-        
+    
         if computer.cpu and computer.ram:
             if not self._validator.validate_cpu_ram_compatibility(computer.cpu, computer.ram):
                 is_valid = False
                 validation_messages.append("⚠ CPU and RAM may not be compatible")
-        
+    
         if computer.gpu and computer.ram:
             if not self._validator.validate_gpu_power(computer.gpu, computer.ram):
                 is_valid = False
                 validation_messages.append("⚠ Insufficient RAM for this GPU")
-        
+    
         total_price = self._price_calculator.calculate_total_price(computer)
         schedule_info = self._scheduler.schedule_assembly(order_id, computer)
-        
+    
         return {
             "order_id": order_id,
             "computer": str(computer),
@@ -332,16 +337,17 @@ class ComputerAssemblyFacade:
             "schedule": schedule_info,
             "status": "✓ Order placed successfully" if is_valid else "⚠ Order placed with warnings"
         }
-    
+  
     def get_quick_quote(self, computer: Computer) -> str:
         price = self._price_calculator.calculate_total_price(computer)
         return f"${price:.2f}"
 ```
 
-**Explanation:**  
+**Explanation:**
 The Facade Pattern simplifies the complex computer ordering process by hiding three subsystems (ComponentValidator, PriceCalculator, AssemblyScheduler) behind a single, easy-to-use interface. Without the facade, clients would need to manually interact with all three subsystems, understand their APIs, and coordinate the workflow. The `ComputerAssemblyFacade` handles all this complexity internally, providing a simple `order_computer()` method that performs validation, pricing, and scheduling automatically. This reduces coupling between the client and subsystems and makes the system much easier to use.
 
 **Usage:**
+
 ```python
 facade = ComputerAssemblyFacade()
 
@@ -370,6 +376,7 @@ print(f"Status: {result['status']}")
 **Location:** `domain/proxies/configuration_proxy.py`
 
 **Code:**
+
 ```python
 from abc import ABC, abstractmethod
 from typing import Dict, List
@@ -380,11 +387,11 @@ class ComputerConfigurationInterface(ABC):
     @abstractmethod
     def get_configuration(self, name: str) -> Computer:
         pass
-    
+  
     @abstractmethod
     def save_configuration(self, name: str, computer: Computer) -> bool:
         pass
-    
+  
     @abstractmethod
     def delete_configuration(self, name: str) -> bool:
         pass
@@ -393,16 +400,16 @@ class ComputerConfigurationInterface(ABC):
 class RealComputerConfiguration(ComputerConfigurationInterface):
     def __init__(self):
         self._configurations: Dict[str, Computer] = {}
-    
+  
     def get_configuration(self, name: str) -> Computer:
         if name in self._configurations:
             return self._configurations[name]
         raise ValueError(f"Configuration '{name}' not found")
-    
+  
     def save_configuration(self, name: str, computer: Computer) -> bool:
         self._configurations[name] = computer
         return True
-    
+  
     def delete_configuration(self, name: str) -> bool:
         if name in self._configurations:
             del self._configurations[name]
@@ -417,7 +424,7 @@ class ComputerConfigurationProxy(ComputerConfigurationInterface):
         self._access_log: List[str] = []
         self._authenticated_users: set = set()
         self._current_user: str = None
-    
+  
     def authenticate(self, username: str, password: str) -> bool:
         if password == "admin":
             self._authenticated_users.add(username)
@@ -425,59 +432,59 @@ class ComputerConfigurationProxy(ComputerConfigurationInterface):
             self._log(f"User '{username}' authenticated")
             return True
         return False
-    
+  
     def logout(self):
         if self._current_user:
             self._log(f"User '{self._current_user}' logged out")
             self._current_user = None
-    
+  
     def get_configuration(self, name: str) -> Computer:
         if not self._check_access():
             raise PermissionError("Authentication required")
-        
+    
         if name in self._cache:
             self._log(f"Retrieved '{name}' from cache")
             return self._cache[name]
-        
+    
         config = self._real_configuration.get_configuration(name)
         self._cache[name] = config
         self._log(f"Retrieved '{name}' from storage")
-        
-        return config
     
+        return config
+  
     def save_configuration(self, name: str, computer: Computer) -> bool:
         if not self._check_access():
             raise PermissionError("Authentication required")
-        
+    
         result = self._real_configuration.save_configuration(name, computer)
-        
+    
         if result:
             self._cache[name] = computer
             self._log(f"Saved configuration '{name}'")
-        
-        return result
     
+        return result
+  
     def delete_configuration(self, name: str) -> bool:
         if not self._check_access():
             raise PermissionError("Authentication required")
-        
+    
         result = self._real_configuration.delete_configuration(name)
-        
+    
         if result:
             if name in self._cache:
                 del self._cache[name]
             self._log(f"Deleted configuration '{name}'")
-        
-        return result
     
+        return result
+  
     def get_access_log(self) -> List[str]:
         if not self._check_access():
             raise PermissionError("Authentication required")
         return self._access_log.copy()
-    
+  
     def _check_access(self) -> bool:
         return self._current_user in self._authenticated_users
-    
+  
     def _log(self, message: str):
         import datetime
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -486,10 +493,11 @@ class ComputerConfigurationProxy(ComputerConfigurationInterface):
         self._access_log.append(log_entry)
 ```
 
-**Explanation:**  
+**Explanation:**
 The Proxy Pattern controls access to the real configuration storage by adding three crucial features: authentication (access control), caching (performance optimization), and logging (audit trail). The `ComputerConfigurationProxy` acts as an intermediary between clients and the `RealComputerConfiguration`. It checks user authentication before allowing any operation, caches frequently accessed configurations to improve performance, and logs all operations for security auditing. This pattern allows adding these cross-cutting concerns without modifying the real configuration class, following the Open/Closed Principle.
 
 **Usage:**
+
 ```python
 real_config = RealComputerConfiguration()
 proxy = ComputerConfigurationProxy(real_config)
@@ -515,6 +523,7 @@ log = proxy.get_access_log()
 ---
 
 ## Project Structure
+
 ```
 lab3/
 ├── run.py                          # Entry point
@@ -544,6 +553,7 @@ lab3/
 ---
 
 ## Output Results
+
 ```
 ╔====================================================================╗
 ║               STRUCTURAL DESIGN PATTERNS LAB                       ║
@@ -664,14 +674,12 @@ PROXY PATTERN - Secure Configuration Access
 This project successfully demonstrates 4 structural design patterns applied to the Computer Assembly System:
 
 1. **Adapter Pattern** - Enables seamless integration of legacy components with incompatible interfaces into the modern system. This pattern allows reusing existing code without modification, following the Open/Closed Principle. It demonstrates how to bridge different systems that need to work together but have incompatible interfaces.
-
 2. **Decorator Pattern** - Provides dynamic feature enhancement without subclassing. Instead of creating separate classes for every feature combination (which would result in dozens of classes), decorators can be stacked in any order to add warranties, overclocking, RGB lighting, and custom paint. This pattern exemplifies composition over inheritance and keeps each feature's responsibility separate.
-
 3. **Facade Pattern** - Dramatically simplifies the complex ordering workflow by hiding three subsystems (validation, pricing, scheduling) behind a unified interface. Clients can order computers with a single method call instead of manually coordinating multiple subsystems. This reduces coupling and makes the system much more maintainable and user-friendly.
-
 4. **Proxy Pattern** - Adds critical cross-cutting concerns (authentication, caching, logging) without modifying the core configuration storage. The proxy controls access, improves performance through caching, and maintains a complete audit trail. This demonstrates how to add functionality transparently while maintaining the same interface.
 
 Each pattern addresses specific structural challenges while maintaining clean architecture and following SOLID principles:
+
 - **Single Responsibility Principle**: Each class has one clear purpose
 - **Open/Closed Principle**: Open for extension, closed for modification
 - **Liskov Substitution Principle**: Subtypes can replace base types seamlessly
